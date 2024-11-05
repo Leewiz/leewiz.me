@@ -8,16 +8,16 @@
 
 ## homepage
 
-    - landing page with links to each project
+- landing page with links to each project
 
 ## polls
 
-    - django polling app
+- django polling app
 
 ## snippets
 
-    - code highlighting app using django restframework
+- code highlighting app using django restframework
 
 ## gtfs_rt
 
-    - realtime transit data app using django restframework and protocol buffers
+- realtime transit data app using django restframework and protocol buffers
