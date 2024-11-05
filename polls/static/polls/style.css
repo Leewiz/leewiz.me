@@ -1,0 +1,18 @@
+body {
+  background: white url("images/background.png") no-repeat;
+  background-size: cover;
+  background-position: center;
+}
+
+p {
+  font-size: 44px;
+  color: red;
+}
+
+li a:link {
+  color: green;
+}
+
+li a:visited {
+  color: red;
+}
