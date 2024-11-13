@@ -1,0 +1,7 @@
+{% load static %}
+<link rel="stylesheet" href="{% static 'polls/style.css' %}" />
+
+<form action="{% url 'get-train-data' %}" method="get">
+  {% csrf_token %}
+  <button type="submit" name="trainbutton" value="0">get train data</button>
+</form>

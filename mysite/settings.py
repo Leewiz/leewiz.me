@@ -37,7 +37,8 @@ INTERNAL_IPS = ['127.0.0.1']
 INSTALLED_APPS = [
     'debug_toolbar',
     'homepage.apps.HomepageConfig',
-    'polls.apps.PollsConfig',
+    'polls',
+    'gtfs_rt',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
