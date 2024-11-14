@@ -25,10 +25,6 @@ SECRET_KEY = 'django-insecure-d-l!8_++n)%7!^j5zbd^*!e1yotekb4*)vw8_^1o-*#4sxis38
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-# added by Leewiz for LAN testing
-# 192.168.1.226 - leewiz desktop
-# 192.168.1.152 - ash work macbook pro 14" 2023 m3 pro
-# ['192.168.1.226', '192.168.1.152']
 ALLOWED_HOSTS = ['*']
 INTERNAL_IPS = ['127.0.0.1']
 
