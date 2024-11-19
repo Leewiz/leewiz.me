@@ -2,6 +2,30 @@
 <link rel="stylesheet" href="{% static 'polls/style.css' %}" />
 
 <form action="{% url 'get-train-data' %}" method="get">
-  {% csrf_token %}
-  <button type="submit" name="trainbutton" value="0">get train data</button>
+  <button type="submit" name="trainbutton1" value="0">get train data</button>
 </form>
+<form action="{% url 'train' %}" method="get">
+  <button type="submit" name="trainbutton2" value="0">get train</button>
+</form>
+
+{% comment %} raw data print {% endcomment %}
+<ul>
+  {{ data }} {% for station in data.results %}
+  <li>{{ station.stop_name }}</li>
+  {% endfor %}
+</ul>
+{% comment %} raw data print {% endcomment %}
+
+{% comment %} borough selector {% endcomment %}
+
+<form action="{% url 'get-train-data' %}" method="get">
+{% if boroughs %}
+<label for="borough">Choose a borough:</label>
+<select name="boroughs" id="boroughs">
+  {% for borough in boroughs %}
+  <option value="{{ borough }}">{{ borough }}</option>
+  {% endfor %}
+</select>
+</form>
+{% endif %}
+{% comment %} borough selector {% endcomment %}
