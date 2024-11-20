@@ -1,6 +1,7 @@
 import requests
 from datetime import datetime
 
+from django.http import JsonResponse, HttpResponseRedirect
 from django.utils.timezone import make_aware
 from django.shortcuts import render
 from rest_framework import generics, permissions, renderers, viewsets
@@ -11,6 +12,7 @@ from google.transit import gtfs_realtime_pb2
 
 from .models import SubwayEntity, SubwayStation, SubwayStopTimeUpdate
 from .serializers import SubwayStationSerializer
+from .forms import SubwayForm
 
 ###
 ### makemigration
@@ -22,9 +24,26 @@ from .serializers import SubwayStationSerializer
 
 BDFMS_REALTIME_URL = 'https://api-endpoint.mta.info/Dataservice/mtagtfsfeeds/nyct%2Fgtfs-bdfm'
 
-def hello_world(request):
-    print("hello world")
-    return render(request, "gtfs_rt/index.html")
+def get_stops(request):
+    if 'borough' in request.GET and request.GET['borough']:
+        stops =  SubwayStation.objects.filter(borough=request.GET['borough'])
+        return JsonResponse(
+            {'data': [{'id': stop.id, 'stop_name': stop.stop_name } for stop in stops]}
+        )
+    return JsonResponse({'data': []})
+
+def subway_form(request):
+    boroughs = SubwayStationViewSet.as_view({'get': 'boroughs'})(request).data
+
+    if request.method == "POST":
+        form = SubwayForm(request.POST)
+        if form.is_valid():
+            return HttpResponseRedirect("/thanks/")
+    
+    else:
+        form = SubwayForm()
+            
+    return render(request, "gtfs_rt/index.html", {"form": form, "data": boroughs})
 
 def get_train_data(request):
     if request.method == 'POST':
@@ -67,9 +86,12 @@ def get_train(request):
                     if "F24" in stop.stop_id:
                         if stop.stop_id[-1] == "N":
                             print(f'stop_id: {stop.stop_id}, arrival_time: {make_aware(datetime.fromtimestamp(stop.arrival.time))}')
-    viewFunc = SubwayStationViewSet.as_view({'get': 'boroughs'})
-    res = viewFunc(request)
-    return render(request, "gtfs_rt/index.html", res.data)
+    boroughsFunc = SubwayStationViewSet.as_view({'get': 'boroughs'})
+    stationsFunc = SubwayStationViewSet.as_view({'get': 'stations'})
+    boroughs = boroughsFunc(request).data
+    stations = stationsFunc(request).data
+    print(stations)
+    return render(request, "gtfs_rt/index.html", (boroughs | stations))
     
 class SubwayStationViewSet(viewsets.ModelViewSet):
     """
@@ -101,8 +123,8 @@ class SubwayStationViewSet(viewsets.ModelViewSet):
         """
         response = super(SubwayStationViewSet, self).list(request, *args, **kwargs)
         if request.accepted_renderer.format == 'html':
-            data = self.queryset.values_list("stop_name", flat=True).distinct()
-            return Response({'data': self.get_serializer().flatten(data)}, template_name = self.template_name)
+            data = self.queryset.values("stop_name", "daytime_routes", "borough").distinct()
+            return Response({'stations': self.get_serializer().flatten(data)}, template_name = self.template_name)
         return response
     
     @action(detail=False, url_path="boroughs")
@@ -112,6 +134,7 @@ class SubwayStationViewSet(viewsets.ModelViewSet):
         """
         response = super(SubwayStationViewSet, self).list(request, *args, **kwargs)
         if request.accepted_renderer.format == 'html':
-            data = self.queryset.values_list("borough", flat=True).distinct()
-            return Response({'boroughs': self.get_serializer().borough_fullname(data)}, template_name = self.template_name)
+            boroughs = self.queryset.values_list('borough', flat=True).distinct()
+            data = self.get_serializer().flatten(boroughs)
+            return Response({'boroughs': data }, template_name = self.template_name)
         return response

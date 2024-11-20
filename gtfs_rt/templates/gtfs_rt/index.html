@@ -1,31 +1,51 @@
 {% load static %}
-<link rel="stylesheet" href="{% static 'polls/style.css' %}" />
+  <link rel="stylesheet" href="{% static 'polls/style.css' %}" />
+  <script src="{% static 'admin/js/vendor/jquery/jquery.js' %}"></script>
+  <script src="{% static 'admin/js/jquery.init.js' %}"></script>
+  <script src="{% static 'gtfs_rt/js/helpers.js' %}"></script>
 
-<form action="{% url 'get-train-data' %}" method="get">
-  <button type="submit" name="trainbutton1" value="0">get train data</button>
-</form>
-<form action="{% url 'train' %}" method="get">
-  <button type="submit" name="trainbutton2" value="0">get train</button>
-</form>
+  <button onclick="myFunction()">click me!</button>
 
-{% comment %} raw data print {% endcomment %}
-<ul>
-  {{ data }} {% for station in data.results %}
-  <li>{{ station.stop_name }}</li>
-  {% endfor %}
-</ul>
-{% comment %} raw data print {% endcomment %}
+  <form action="{% url 'get-train-data' %}" method="get">
+    <button type="submit" name="trainbutton1" value="0">get train data</button>
+  </form>
+  <form action="{% url 'subway' %}" method="get">
+    <button type="submit" name="trainbutton2" value="0">get train</button>
+  </form>
 
-{% comment %} borough selector {% endcomment %}
+  <form method="GET">
+    {{ form }}
+  </form>
 
-<form action="{% url 'get-train-data' %}" method="get">
-{% if boroughs %}
-<label for="borough">Choose a borough:</label>
-<select name="boroughs" id="boroughs">
-  {% for borough in boroughs %}
-  <option value="{{ borough }}">{{ borough }}</option>
-  {% endfor %}
-</select>
-</form>
-{% endif %}
-{% comment %} borough selector {% endcomment %}
+  {% comment %} raw data print {% endcomment %}
+  {% comment %} <ul>
+    {{ data }} {% for station in data.results %}
+    <li>{{ station.stop_name }}</li>
+    {% endfor %}
+  </ul> {% endcomment %}
+  {% comment %} raw data print {% endcomment %}
+
+  {% comment %} borough selector {% endcomment %}
+{% comment %} 
+  <form action="{% url 'get_stops' %}" method="get">
+  {% if data %}
+  <label for="borough">Choose a borough:</label>
+  <select name="borough-selector" required>
+    {% for borough in data.boroughs %}
+    <option value="{{ borough }}">{{ borough }}</option>
+    {% endfor %}
+  </select>
+  {% endif %} {% endcomment %}
+  {% comment %} borough selector {% endcomment %}
+
+  {% comment %} subway stop selector {% endcomment %}
+  {% comment %} {% if stations %}
+  <label for="stop-name">Choose a stop:</label>
+  <select name="stop-selector" id="subway_stops">
+    {% for stop in stations %}
+    <option value="{{ stop.stop_name }}">{{ stop.stop_name }}</option>
+    {% endfor %}
+  </select>
+  </form>
+  {% endif %} {% endcomment %}
+  {% comment %} subway stop selector {% endcomment %}

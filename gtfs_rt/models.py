@@ -29,10 +29,10 @@ class SubwayEntity(models.Model):
 
 class SubwayStation(models.Model):
     station_id = models.CharField(max_length=10)
+    borough = models.CharField(max_length=100)
     stop_name = models.CharField(max_length=100)
     complex_id = models.CharField(max_length=100)
     division = models.CharField(max_length=100)
-    borough = models.CharField(max_length=100)
     north_direction_label = models.CharField(max_length=100)
     south_direction_label = models.CharField(max_length=100)
     line = models.CharField(max_length=100)
