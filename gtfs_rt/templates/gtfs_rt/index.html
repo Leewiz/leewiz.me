@@ -17,6 +17,9 @@
     {{ form }}
   </form>
 
+  <div id="content">
+    {% block content %}{% endblock %}
+  </div>
   {% comment %} raw data print {% endcomment %}
   {% comment %} <ul>
     {{ data }} {% for station in data.results %}

@@ -38,7 +38,7 @@ class SubwayStation(models.Model):
     line = models.CharField(max_length=100)
     daytime_routes = models.CharField(max_length=100)
     structure = models.CharField(max_length=100)
-    gtfs_stop_id = models.CharField(max_length=100)
+    gtfs_stop_id = models.CharField(max_length=100, unique=True)
     gtfs_latitude = models.CharField(max_length=100)
     gtfs_longitude = models.CharField(max_length=100)
     ada_notes = models.CharField(max_length=100, null=True)

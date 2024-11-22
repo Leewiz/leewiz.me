@@ -24,6 +24,7 @@ from .forms import SubwayForm
 
 BDFMS_REALTIME_URL = 'https://api-endpoint.mta.info/Dataservice/mtagtfsfeeds/nyct%2Fgtfs-bdfm'
 
+# helpers.js calls this endpoint to populate subway dropdown menus
 def get_stops(request):
     if 'borough' in request.GET and request.GET['borough']:
         stops =  SubwayStation.objects.filter(borough=request.GET['borough'])
@@ -42,7 +43,6 @@ def subway_form(request):
     
     else:
         form = SubwayForm()
-            
     return render(request, "gtfs_rt/index.html", {"form": form, "data": boroughs})
 
 def get_train_data(request):
