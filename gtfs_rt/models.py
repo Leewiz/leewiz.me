@@ -7,11 +7,6 @@ dropdown for route id (BDFMS)
    - display next scheduled train in each direction
 '''
 
-class SubwayStopTimeUpdate(models.Model):
-    arrival_time = models.DateTimeField()
-    departure_time = models.DateTimeField()
-    stop_id = models.CharField(max_length=100)
-
 class SubwayEntity(models.Model):
     # entity_id
     # route name (B, D, F, M, etc)
@@ -21,11 +16,11 @@ class SubwayEntity(models.Model):
     
     entity_id = models.CharField(max_length=100)
     trip_id = models.CharField(max_length=100)
-    start_time = models.DateTimeField()
-    start_date = models.DateTimeField()
+    start_time = models.TimeField(null=True)
+    start_date = models.DateField(null=True)
     route_id = models.CharField(max_length=100)
     travel_direction = models.CharField(max_length=100)
-    stop_time_updates = models.ManyToManyField(SubwayStopTimeUpdate)
+    stop_time_updates = models.JSONField(null=True)
 
 class SubwayStation(models.Model):
     station_id = models.CharField(max_length=10)

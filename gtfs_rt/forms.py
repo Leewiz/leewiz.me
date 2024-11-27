@@ -39,7 +39,7 @@ class SubwayForm(forms.ModelForm):
         }
         widgets = {
             'borough': forms.Select(attrs={'onchange': 'get_stops_by_borough(this.value);'}),
-            'stop_name': forms.Select()
+            'stop_name': forms.Select(attrs={'onchange': 'get_time_to_next_train(this.value);'})
         }
         
     def __init__(self, *args, **kwargs):

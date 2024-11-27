@@ -16,39 +16,8 @@
   <form method="GET">
     {{ form }}
   </form>
-
   <div id="content">
-    {% block content %}{% endblock %}
+    {% block content %}{% endblock content %}
   </div>
-  {% comment %} raw data print {% endcomment %}
-  {% comment %} <ul>
-    {{ data }} {% for station in data.results %}
-    <li>{{ station.stop_name }}</li>
-    {% endfor %}
-  </ul> {% endcomment %}
-  {% comment %} raw data print {% endcomment %}
-
-  {% comment %} borough selector {% endcomment %}
-{% comment %} 
-  <form action="{% url 'get_stops' %}" method="get">
-  {% if data %}
-  <label for="borough">Choose a borough:</label>
-  <select name="borough-selector" required>
-    {% for borough in data.boroughs %}
-    <option value="{{ borough }}">{{ borough }}</option>
-    {% endfor %}
-  </select>
-  {% endif %} {% endcomment %}
-  {% comment %} borough selector {% endcomment %}
-
-  {% comment %} subway stop selector {% endcomment %}
-  {% comment %} {% if stations %}
-  <label for="stop-name">Choose a stop:</label>
-  <select name="stop-selector" id="subway_stops">
-    {% for stop in stations %}
-    <option value="{{ stop.stop_name }}">{{ stop.stop_name }}</option>
-    {% endfor %}
-  </select>
-  </form>
-  {% endif %} {% endcomment %}
-  {% comment %} subway stop selector {% endcomment %}
+<ul>
+</ul>
