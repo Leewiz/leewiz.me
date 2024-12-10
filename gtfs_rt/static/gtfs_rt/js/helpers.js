@@ -31,7 +31,14 @@ function get_time_to_next_train(stop_id) {
       { stop_id: stop_id },
       function (res, textStatus) {
         var html_times = "";
-        console.log(res);
+        var selected_value = $("#id_stop_name").val();
+        $("select#id_stop_name option").each(function () {
+          if ($(this).val() == selected_value) {
+            $(this).attr("selected", "selected");
+          } else if ($(this).val() != selected_value) {
+            $(this).removeAttr("selected");
+          }
+        });
         $.each(res.data, function (i, item) {
           console.log(item);
         });

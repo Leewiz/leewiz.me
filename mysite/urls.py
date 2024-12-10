@@ -21,6 +21,7 @@ urlpatterns = [
     path('gtfs-rt/subway/borough/stops', gtfs_rt_views.get_stops, name='get_stops'),
     path('gtfs-rt/subway/borough/stops/times', gtfs_rt_views.get_times_by_stop_id, name='get_times_by_stop_id'),
     path('gtfs-rt/data', gtfs_rt_views.get_train_data, name='get-train-data'),
+    path('gtfs-rt/purge', gtfs_rt_views.purge_old_stop_data, name='purge-old-stop-data'),
     path('gtfs-rt/testview', gtfs_rt_views.SubwayStationViewSet.as_view({'get': 'list'}), name='testview'),
     path('api/', include(router.urls)),
     path('polls/', include('polls.urls')),

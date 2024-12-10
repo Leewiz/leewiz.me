@@ -36,15 +36,6 @@ class Migration(migrations.Migration):
             ],
         ),
         migrations.CreateModel(
-            name='SubwayStopTimeUpdate',
-            fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('arrival_time', models.DateTimeField()),
-                ('departure_time', models.DateTimeField()),
-                ('stop_id', models.CharField(max_length=100)),
-            ],
-        ),
-        migrations.CreateModel(
             name='SubwayEntity',
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
@@ -54,7 +45,6 @@ class Migration(migrations.Migration):
                 ('start_date', models.DateTimeField()),
                 ('route_id', models.CharField(max_length=100)),
                 ('travel_direction', models.CharField(max_length=100)),
-                ('stop_time_updates', models.ManyToManyField(to='gtfs_rt.subwaystoptimeupdate')),
             ],
         ),   
     ]

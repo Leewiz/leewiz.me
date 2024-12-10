@@ -18,12 +18,13 @@ def get_borough_choices():
         return borough_choices
 
 def get_stop_names_by_borough(borough):
-    stops = SubwayStation.objects.filter(borough=borough).values('gtfs_stop_id', 'stop_name').distinct()
+    stops = SubwayStation.objects.filter(borough=borough).values('gtfs_stop_id', 'stop_name')
     seen = set()
     keep = []
     for stop in stops:
         if stop['stop_name'] in seen:
-            print('seent: ', stop['gtfs_stop_id'], stop['stop_name'])
+            seen
+            #print('seent: ', stop['gtfs_stop_id'], stop['stop_name'])
         else:
             seen.add(stop['stop_name'])
             keep.append((stop['gtfs_stop_id'], stop['stop_name']))

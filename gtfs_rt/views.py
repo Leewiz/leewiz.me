@@ -1,19 +1,19 @@
 import requests
-from datetime import datetime
+from datetime import datetime, timedelta
 
-from django.db.models import Q
 from django.http import JsonResponse, HttpResponseRedirect
 from django.urls import reverse
+from django.utils import timezone
 from django.utils.timezone import make_aware
 from django.shortcuts import render
-from rest_framework import generics, permissions, renderers, viewsets
+from rest_framework import renderers, viewsets
 from rest_framework.response import Response
 from rest_framework.decorators import action
 
 from google.transit import gtfs_realtime_pb2
 from google.protobuf.json_format import MessageToDict
 
-from .models import SubwayEntity, SubwayStation
+from .models import SubwayEntity, SubwayStation, StopTimeUpdate
 from .serializers import SubwayStationSerializer
 from .forms import SubwayForm
 
@@ -42,11 +42,10 @@ def get_stops(request):
 #       - time
 from pprint import pprint
 def get_times_by_stop_id(request):
-    # how to filter on JSONField
+    stop_times = {}
     if 'stop_id' in request.GET:
-        next_trains = SubwayEntity.objects.filter(Q(stop_time_updates__0__stopId = 'F01S') | Q(stop_time_updates__0__stopId = 'F01N'))
+        #stop_times = StopTimeUpdate.objects.filter(stop_id__icontains=)
         ret = []
-        print(next_trains.count())
         count = 0
         for train in next_trains:
             count += 1
@@ -62,6 +61,7 @@ def subway_form(request):
         form = SubwayForm(request.POST)
         if form.is_valid():
             return HttpResponseRedirect("/thanks/")
+    
     else:
         form = SubwayForm()
         
@@ -93,8 +93,8 @@ def get_train_data(request):
         seent = set()
         keep = []
         print('loading')
+        count = 0
         for entity in feed.entity:
-            # if entity.HasField('trip_update'):
             if entity.id in seent:
                 print('seent: ', entity.id)
             else:
@@ -105,13 +105,32 @@ def get_train_data(request):
                 subway_entity, created = SubwayEntity.objects.get_or_create(entity_id = entity.id)
                 data = MessageToDict(entity.trip_update)
                 subway_entity.trip_id = data['trip']['tripId']
-                subway_entity.start_time = data['trip']['startTime']
-                subway_entity.start_date = data['trip']['startDate']
+                subway_entity.start_time = make_aware(datetime.strptime(data['trip']['startTime'], '%H:%M:%S'))
+                subway_entity.start_date = make_aware(datetime.strptime(data['trip']['startDate'], '%Y%m%d'))
                 subway_entity.route_id = data['trip']['routeId']
-                subway_entity.stop_time_updates = data.get('stopTimeUpdate', None)
                 subway_entity.save()
+
+                stops = data.get('stopTimeUpdate', None)
+                if stops:
+                    for stop in stops:
+                        stop_time_update, created = StopTimeUpdate.objects.get_or_create(
+                            subway_entity = subway_entity,
+                            stop_id = stop['stopId'],
+                            arrival_time = make_aware(datetime.fromtimestamp(int(stop['arrival']['time']))),
+                            departure_time = make_aware(datetime.fromtimestamp(int(stop['departure']['time']))),
+                        )
+                        if not created:
+                            count += 1
+                            print(f'duplicate {count}: {subway_entity.entity_id} {stop['stopId']} {make_aware(datetime.fromtimestamp(int(stop['arrival']['time'])))}')
+
         print('done')
         return HttpResponseRedirect(reverse("subway"))
+
+# purge stop_time_updates whose arrival_time has passed by 30 minutes
+def purge_old_stop_data(request):
+    thirty_minutes_ago = timezone.now() - timedelta(minutes=30)
+    StopTimeUpdate.objects.filter(arrival_time__lt=thirty_minutes_ago).delete()
+    return HttpResponseRedirect(reverse("subway"))
     
 class SubwayStationViewSet(viewsets.ModelViewSet):
     """

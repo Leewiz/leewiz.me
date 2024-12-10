@@ -1,23 +1,23 @@
 {% load static %}
-  <link rel="stylesheet" href="{% static 'polls/style.css' %}" />
-  <script src="{% static 'admin/js/vendor/jquery/jquery.js' %}"></script>
-  <script src="{% static 'admin/js/jquery.init.js' %}"></script>
-  <script src="{% static 'gtfs_rt/js/helpers.js' %}"></script>
+<link rel="stylesheet" href="{% static 'polls/style.css' %}" />
+<script src="{% static 'admin/js/vendor/jquery/jquery.js' %}"></script>
+<script src="{% static 'admin/js/jquery.init.js' %}"></script>
+<script src="{% static 'gtfs_rt/js/helpers.js' %}"></script>
 
-  <button onclick="myFunction()">click me!</button>
+<button onclick="myFunction()">click me!</button>
 
-  <form action="{% url 'get-train-data' %}" method="get">
-    <button type="submit" name="trainbutton1" value="0">get train data</button>
-  </form>
-  <form action="{% url 'subway' %}" method="get">
-    <button type="submit" name="trainbutton2" value="0">get train</button>
-  </form>
+<form action="{% url 'purge-old-stop-data' %}" method="get">
+  <button type="submit" name="purgeoldstopdatabutton" method="get">
+    purge old stop data
+  </button>
+</form>
+<form action="{% url 'get-train-data' %}" method="get">
+  <button type="submit" name="trainbutton1" value="0">get train data</button>
+</form>
+<form action="{% url 'subway' %}" method="get">
+  <button type="submit" name="trainbutton2" value="0">get train</button>
+</form>
 
-  <form method="GET">
-    {{ form }}
-  </form>
-  <div id="content">
-    {% block content %}{% endblock content %}
-  </div>
-<ul>
-</ul>
+<form method="GET">{{ form }}</form>
+<div id="content">{% block content %}{% endblock content %}</div>
+<ul></ul>
