@@ -3,12 +3,12 @@ from datetime import datetime, timedelta
 
 from django.http import JsonResponse, HttpResponseRedirect
 from django.urls import reverse
+from django.shortcuts import render
 from django.utils import timezone
 from django.utils.timezone import make_aware
-from django.shortcuts import render
 from rest_framework import renderers, viewsets
-from rest_framework.response import Response
 from rest_framework.decorators import action
+from rest_framework.response import Response
 
 from google.transit import gtfs_realtime_pb2
 from google.protobuf.json_format import MessageToDict
@@ -27,7 +27,10 @@ BDFMS_REALTIME_URL = 'https://api-endpoint.mta.info/Dataservice/mtagtfsfeeds/nyc
 # helpers.js calls this endpoint to populate subway dropdown menus
 def get_stops(request):
     if 'borough' in request.GET and request.GET['borough']:
-        stops =  SubwayStation.objects.filter(borough=request.GET['borough'])
+        borough = request.GET['borough']
+    if 'route' in request.GET and request.GET['route']:
+        route = request.GET['route']
+        stops =  SubwayStation.objects.filter(borough=borough, daytime_routes__icontains=route)
         return JsonResponse(
             {'data': [{'id': stop.gtfs_stop_id, 'stop_name': stop.stop_name } for stop in stops]}
         )
@@ -40,18 +43,28 @@ def get_stops(request):
 #       - time
 #     - departure
 #       - time
-from pprint import pprint
 def get_times_by_stop_id(request):
-    stop_times = {}
+    current_time = timezone.now()
+    ret = []
     if 'stop_id' in request.GET:
-        #stop_times = StopTimeUpdate.objects.filter(stop_id__icontains=)
-        ret = []
-        count = 0
-        for train in next_trains:
-            count += 1
-            print(f'!!!!!!!!!!!!!{count}!!!!!!!!!!!!!')
-            pprint(train.stop_time_updates)
-            
+        past_five_minutes = current_time - timedelta(minutes=5)
+        next_half_hour = current_time + timedelta(minutes=30)
+        stop_id = request.GET['stop_id']
+        next_trains = StopTimeUpdate.objects.filter(stop_id__icontains=stop_id, arrival_time__range=(past_five_minutes, next_half_hour))
+        northbound = next_trains.filter(stop_id__endswith='N').order_by('arrival_time')
+        southbound = next_trains.filter(stop_id__endswith='S').order_by('arrival_time')
+        print(f'------northbound-------')
+        for train in northbound:
+            if train.arrival_time > current_time:
+                print(f'{train.arrival_time - current_time}')
+            else:
+                print(f'- {current_time - train.arrival_time}')
+        print(f'\n------southbound-------')
+        for train in southbound:
+            if train.arrival_time > current_time:
+                print(f'{train.arrival_time - current_time}')
+            else:
+                print(f'- {current_time - train.arrival_time}')
         return JsonResponse({'data': ret})
     return JsonResponse({'data': []})
 
@@ -129,7 +142,8 @@ def get_train_data(request):
 # purge stop_time_updates whose arrival_time has passed by 30 minutes
 def purge_old_stop_data(request):
     thirty_minutes_ago = timezone.now() - timedelta(minutes=30)
-    StopTimeUpdate.objects.filter(arrival_time__lt=thirty_minutes_ago).delete()
+    count, data = StopTimeUpdate.objects.filter(arrival_time__lt=thirty_minutes_ago).delete()
+    print(f'purged {count} records')
     return HttpResponseRedirect(reverse("subway"))
     
 class SubwayStationViewSet(viewsets.ModelViewSet):

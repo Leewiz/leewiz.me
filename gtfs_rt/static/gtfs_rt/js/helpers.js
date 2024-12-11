@@ -2,11 +2,14 @@ function myFunction() {
   alert("hello leewiz");
 }
 
-function get_stops_by_borough(borough) {
+function get_stops_by_borough() {
   (function ($) {
     $.getJSON(
       "/gtfs-rt/subway/borough/stops",
-      { borough: borough },
+      {
+        borough: $("#id_borough").find(":selected").val(),
+        route: $("#id_daytime_routes").find(":selected").val(),
+      },
       function (res, textStatus) {
         var options = "";
         $.each(res.data, function (i, item) {

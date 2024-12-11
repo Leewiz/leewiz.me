@@ -8,9 +8,9 @@ class StopTimeUpdateInline(admin.TabularInline):
     model = StopTimeUpdate
 
 class SubwayStationAdmin(admin.ModelAdmin):
-    list_filter = ["stop_name"]
-    search_fields = ["gtfs_stop_id", "stop_name", "borough"]
-    list_display = ["gtfs_stop_id", "station_id", "stop_name", "borough"]
+    list_filter = ["borough", "division"]
+    search_fields = ["borough", "gtfs_stop_id", "stop_name"]
+    list_display = ["gtfs_stop_id", "daytime_routes", "stop_name", "borough", "division"]
 
 class SubwayEntityAdmin(admin.ModelAdmin):
     list_filter = ["entity_id"]
